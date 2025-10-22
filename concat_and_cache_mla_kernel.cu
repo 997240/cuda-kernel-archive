@@ -1,12 +1,8 @@
-#include "cuda_utils.h"
-#include "quantization/vectorization_utils.cuh"
 
 #ifdef USE_ROCM
-  #include "quantization/w8a8/fp8/amd/quant_utils.cuh"
   #include <hip/hip_bf16.h>
 typedef __hip_bfloat16 __nv_bfloat16;
 #else
-  #include "quantization/w8a8/fp8/nvidia/quant_utils.cuh"
 #endif
 
 namespace vllm {

@@ -1,10 +1,3 @@
-#include "quantization/vectorization_utils.cuh"
-
-#ifdef USE_ROCM
-  #include "quantization/w8a8/fp8/amd/quant_utils.cuh"
-#else
-  #include "quantization/w8a8/fp8/nvidia/quant_utils.cuh"
-#endif
 
 namespace vllm {
 
