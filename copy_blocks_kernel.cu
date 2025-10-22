@@ -1,0 +1,57 @@
+#include <torch/all.h>
+#include <ATen/cuda/CUDAContext.h>
+#include <c10/cuda/CUDAGuard.h>
+#include <c10/cuda/CUDAException.h>
+
+#include "cuda_utils.h"
+#include "cuda_compat.h"
+#include "dispatch_utils.h"
+#include "quantization/vectorization_utils.cuh"
+
+#ifdef USE_ROCM
+  #include "quantization/w8a8/fp8/amd/quant_utils.cuh"
+#else
+  #include "quantization/w8a8/fp8/nvidia/quant_utils.cuh"
+#endif
+
+#include <algorithm>
+#include <cassert>
+#include <cfloat>
+
+#ifdef USE_ROCM
+  #include <hip/hip_bf16.h>
+typedef __hip_bfloat16 __nv_bfloat16;
+#endif
+
+namespace vllm {
+
+// Grid: (num_layers, num_pairs)
+template <typename scalar_t>
+__global__ void copy_blocks_kernel(int64_t* key_cache_ptrs,
+                                   int64_t* value_cache_ptrs,
+                                   const int64_t* __restrict__ block_mapping,
+                                   const int numel_per_block) {
+  const int layer_idx = blockIdx.x;
+  const int pair_idx = blockIdx.y;
+
+  scalar_t* key_cache = reinterpret_cast<scalar_t*>(key_cache_ptrs[layer_idx]);
+  scalar_t* value_cache =
+      reinterpret_cast<scalar_t*>(value_cache_ptrs[layer_idx]);
+  int64_t src_block_number = block_mapping[2 * pair_idx];
+  int64_t dst_block_number = block_mapping[2 * pair_idx + 1];
+
+  const int64_t src_block_offset = src_block_number * numel_per_block;
+  const int64_t dst_block_offset = dst_block_number * numel_per_block;
+  for (int i = threadIdx.x; i < numel_per_block; i += blockDim.x) {
+    int64_t src_offset = src_block_offset + i;
+    int64_t dst_offset = dst_block_offset + i;
+    key_cache[dst_offset] = key_cache[src_offset];
+  }
+  for (int i = threadIdx.x; i < numel_per_block; i += blockDim.x) {
+    int64_t src_offset = src_block_offset + i;
+    int64_t dst_offset = dst_block_offset + i;
+    value_cache[dst_offset] = value_cache[src_offset];
+  }
+}
+
+}  // namespace vllm
