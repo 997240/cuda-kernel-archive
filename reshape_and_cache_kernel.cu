@@ -3,10 +3,6 @@
 #include <c10/cuda/CUDAGuard.h>
 #include <c10/cuda/CUDAException.h>
 
-#ifdef USE_ROCM
-#else
-#endif
-
 #include <algorithm>
 #include <cassert>
 #include <cfloat>

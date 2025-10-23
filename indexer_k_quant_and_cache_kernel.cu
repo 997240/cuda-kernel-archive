@@ -3,10 +3,6 @@
 #include <c10/cuda/CUDAGuard.h>
 #include <c10/cuda/CUDAException.h>
 
-#ifdef USE_ROCM
-#else
-#endif
-
 #include <algorithm>
 #include <cassert>
 #include <cfloat>
@@ -23,12 +19,11 @@ __global__ void indexer_k_quant_and_cache_kernel(
     const scalar_t* __restrict__ k,  // [num_tokens, head_dim]
     cache_t* __restrict__ kv_cache,  // [num_blocks, block_size, cache_stride]
     const int64_t* __restrict__ slot_mapping,  // [num_tokens]
-    const int head_dim,                        // dimension of each head
-    const int quant_block_size,                // quantization block size
-    const int cache_block_size,                // cache block size
-    const int cache_stride,  // stride for each token in kv_cache
-    const bool use_ue8m0     // use ue8m0 scale format
-) {
+    const int head_dim,
+    const int quant_block_size,
+    const int cache_block_size,
+    const int cache_stride,
+    const bool use_ue8m0) {
   constexpr int VEC_SIZE = 4;
   const int64_t token_idx = blockIdx.x;
   const int64_t head_dim_idx = (blockIdx.y * blockDim.y * blockDim.x +
@@ -38,7 +33,6 @@ __global__ void indexer_k_quant_and_cache_kernel(
   const int64_t block_idx = slot_idx / cache_block_size;
   const int64_t block_offset = slot_idx % cache_block_size;
 
-  // NOTE: slot_idx can be -1 if the token is padded
   if (slot_idx < 0 || (head_dim_idx >= head_dim)) {
     return;
   }
@@ -54,7 +48,6 @@ __global__ void indexer_k_quant_and_cache_kernel(
   __syncwarp();
 #endif
 
-  // Reduced amax
   for (int mask = 16; mask > 0; mask /= 2) {
 #ifdef USE_ROCM
     amax = fmaxf(amax, __shfl_xor_sync(uint64_t(-1), amax, mask));
@@ -65,7 +58,7 @@ __global__ void indexer_k_quant_and_cache_kernel(
 #ifndef USE_ROCM
   __syncwarp();
 #endif
-  float scale = fmaxf(amax, 1e-4) / 448.0f;
+  float scale = fmaxf(amax, 1e-4f) / 448.0f;
   if (use_ue8m0) {
     scale = exp2f(ceilf(log2f(scale)));
   }

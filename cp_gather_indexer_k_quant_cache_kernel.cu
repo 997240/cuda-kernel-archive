@@ -3,10 +3,6 @@
 #include <c10/cuda/CUDAGuard.h>
 #include <c10/cuda/CUDAException.h>
 
-#ifdef USE_ROCM
-#else
-#endif
-
 #include <algorithm>
 #include <cassert>
 #include <cfloat>
@@ -27,20 +23,18 @@ __global__ void cp_gather_indexer_k_quant_cache_kernel(
                                    // 4]
     const int* __restrict__ block_table,  // [batch_size, num_blocks]
     const int* __restrict__ cu_seq_lens,  // [batch_size + 1]
-    const int batch_size,                 // batch size
-    const int64_t token_stride,           // stride for each token in dst_k
-    const int64_t head_dim,               // dimension of each head
-    const int64_t block_stride,           // stride for each block in kv_cache
-    const int64_t cache_token_stride,     // stride for each token in kv_cache
-    const int64_t cache_block_size,  // num_tokens for each block in kv_cache
-    const int num_blocks,            // number of blocks
-    const int num_tokens,            // number of tokens
-    const int quant_block_size       // quantization block size
-) {
+    const int batch_size,
+    const int64_t token_stride,
+    const int64_t head_dim,
+    const int64_t block_stride,
+    const int64_t cache_token_stride,
+    const int64_t cache_block_size,
+    const int num_blocks,
+    const int num_tokens,
+    const int quant_block_size) {
   constexpr int VEC_SIZE = sizeof(float4) / sizeof(char);
   const int token_idx = blockIdx.x * blockDim.y + threadIdx.y;
   const int head_idx = (blockIdx.y * blockDim.x + threadIdx.x) * VEC_SIZE;
-  // Find batch index within a block
   __shared__ int batch_idx[BLOCK_Y_SIZE];
   for (int iter = 0; iter < cuda_utils::ceil_div(batch_size, int(blockDim.x));
        iter++) {

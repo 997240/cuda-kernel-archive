@@ -1,3 +1,16 @@
+#include <torch/all.h>
+#include <ATen/cuda/CUDAContext.h>
+#include <c10/cuda/CUDAGuard.h>
+#include <c10/cuda/CUDAException.h>
+
+#include <algorithm>
+#include <cassert>
+#include <cfloat>
+
+#ifdef USE_ROCM
+  #include <hip/hip_bf16.h>
+typedef __hip_bfloat16 __nv_bfloat16;
+#endif
 
 namespace vllm {
 

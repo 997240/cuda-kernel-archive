@@ -1,8 +1,15 @@
+#include <torch/all.h>
+#include <ATen/cuda/CUDAContext.h>
+#include <c10/cuda/CUDAGuard.h>
+#include <c10/cuda/CUDAException.h>
+
+#include <algorithm>
+#include <cassert>
+#include <cfloat>
 
 #ifdef USE_ROCM
   #include <hip/hip_bf16.h>
 typedef __hip_bfloat16 __nv_bfloat16;
-#else
 #endif
 
 namespace vllm {
@@ -14,18 +21,16 @@ __global__ void concat_and_cache_mla_kernel(
     cache_t* __restrict__ kv_cache,  // [num_blocks, block_size, (kv_lora_rank
                                      // + pe_dim)]
     const int64_t* __restrict__ slot_mapping,  // [num_tokens]
-    const int block_stride,                    //
-    const int entry_stride,                    //
-    const int kv_c_stride,                     //
-    const int k_pe_stride,                     //
-    const int kv_lora_rank,                    //
-    const int pe_dim,                          //
-    const int block_size,                      //
-    const float* scale                         //
-) {
+    const int block_stride,
+    const int entry_stride,
+    const int kv_c_stride,
+    const int k_pe_stride,
+    const int kv_lora_rank,
+    const int pe_dim,
+    const int block_size,
+    const float* scale) {
   const int64_t token_idx = blockIdx.x;
   const int64_t slot_idx = slot_mapping[token_idx];
-  // NOTE: slot_idx can be -1 if the token is padded
   if (slot_idx < 0) {
     return;
   }

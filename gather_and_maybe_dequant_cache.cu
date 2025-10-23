@@ -3,10 +3,6 @@
 #include <c10/cuda/CUDAGuard.h>
 #include <c10/cuda/CUDAException.h>
 
-#ifdef USE_ROCM
-#else
-#endif
-
 #include <algorithm>
 #include <cassert>
 #include <cfloat>
@@ -18,7 +14,6 @@ typedef __hip_bfloat16 __nv_bfloat16;
 
 namespace vllm {
 
-// grid is launched with dimensions (batch, num_splits)
 template <typename scalar_t, typename cache_t, Fp8KVCacheDataType kv_dt>
 __global__ void gather_and_maybe_dequant_cache(
     const cache_t* __restrict__ src_cache,    // [NUM_BLOCKS, BLOCK_SIZE,
@@ -30,10 +25,9 @@ __global__ void gather_and_maybe_dequant_cache(
     const int64_t block_table_stride, const int64_t cache_block_stride,
     const int64_t cache_entry_stride, const int64_t dst_entry_stride,
     const float* __restrict__ scale,
-    const int32_t* __restrict__ seq_starts) {  // Optional: starting offsets per
-                                               // batch
+    const int32_t* __restrict__ seq_starts) {
 
-  const int64_t bid = blockIdx.x;  // Batch ID
+  const int64_t bid = blockIdx.x;
   const int32_t num_splits = gridDim.y;
   const int32_t split = blockIdx.y;
   const int32_t seq_start = cu_seq_lens[bid];
@@ -53,9 +47,6 @@ __global__ void gather_and_maybe_dequant_cache(
   int32_t full_blocks_end = split_end;
   int32_t partial_block_size = 0;
 
-  // Adjust the pointer for the block_table for this batch.
-  // If seq_starts is provided, compute an offset based on (seq_starts[bid] /
-  // page_size)
   const int32_t batch_offset = bid * block_table_stride;
   int32_t offset = 0;
   if (seq_starts != nullptr) {
@@ -63,7 +54,6 @@ __global__ void gather_and_maybe_dequant_cache(
   }
   const int32_t* batch_block_table = block_table + batch_offset + offset;
 
-  // Adjust dst pointer based on the cumulative sequence lengths.
   dst += seq_start * dst_entry_stride;
 
   if (is_last_split) {
