@@ -1,7 +1,5 @@
-#include <ATEN/cuda/CUDAContext.h>
 #include <cub/cub.cuh>
 
-#include <ATEN/ATEN.h>
 #define CEILDIV(x, y) (((x) + (y) - 1) / (y))
 
 namespace vllm {

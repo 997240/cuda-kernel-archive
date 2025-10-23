@@ -1,8 +1,4 @@
-#include <ATEN/cuda/CUDAContext.h>
 #include <cub/cub.cuh>
-
-#include <ATEN/ATEN.h>
-#include <ATEN/cuda/Atomic.cuh>
 
 #ifndef VLLM_LDG
 #define VLLM_LDG(ptr) __ldg(ptr)

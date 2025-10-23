@@ -1,6 +1,5 @@
 #include <cub/cub.cuh>
 
-#include <ATEN/ATEN.h>
 namespace vllm {
 namespace moe {
 
