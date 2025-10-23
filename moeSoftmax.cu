@@ -1,7 +1,4 @@
 #include <type_traits>
-#include <torch/all.h>
-#include <ATen/cuda/CUDAContext.h>
-#include <c10/cuda/CUDAGuard.h>
 #include <cub/cub.cuh>
 #include <cfloat>
 #include <math.h>

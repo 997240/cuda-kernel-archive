@@ -1,8 +1,4 @@
-#include <ATen/cuda/CUDAContext.h>
-#include <torch/all.h>
-#include <c10/cuda/CUDAGuard.h>
 #include <cmath>
-#include <c10/util/Float8_e4m3fn.h>
 #include <array>
 #include <type_traits>
 #ifndef USE_ROCM

@@ -1,10 +1,4 @@
-#include <torch/all.h>
-#include <ATen/cuda/CUDAContext.h>
-#include <c10/cuda/CUDAGuard.h>
 #include <cub/cub.cuh>
-
-#include <ATen/ATen.h>
-#include <ATen/cuda/Atomic.cuh>
 
 #define CEILDIV(x, y) (((x) + (y) - 1) / (y))
 

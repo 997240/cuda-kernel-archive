@@ -1,8 +1,3 @@
-#include <torch/all.h>
-
-#include <ATen/cuda/CUDAContext.h>
-#include <c10/cuda/CUDAGuard.h>
-
 #include <cuda_fp16.h>
 
 static constexpr int default_threads = 256;

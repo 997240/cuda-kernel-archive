@@ -1,6 +1,3 @@
-#include <torch/cuda.h>
-#include <c10/cuda/CUDAGuard.h>
-
 namespace vllm {
 
 template <typename scalar_t>

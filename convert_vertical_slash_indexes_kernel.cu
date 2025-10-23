@@ -1,7 +1,5 @@
 #include <assert.h>
 #include <cuda.h>
-#include <torch/all.h>
-
 __device__ int64_t save_blocks(int* block_offset, int64_t range_start,
                                int64_t range_end, int64_t block_size,
                                int64_t input_block_count, int64_t kv_seqlen) {

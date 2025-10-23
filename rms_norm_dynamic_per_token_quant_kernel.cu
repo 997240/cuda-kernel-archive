@@ -1,6 +1,3 @@
-#include <ATen/cuda/CUDAContext.h>
-#include <c10/cuda/CUDAGuard.h>
-
 namespace vllm {
 
 template <typename scalar_t, typename scalar_out_t, bool has_residual = false>

@@ -1,5 +1,3 @@
-#include <torch/cuda.h>
-#include <c10/cuda/CUDAGuard.h>
 #include <type_traits>
 #include <cstdint>
 

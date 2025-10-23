@@ -1,13 +1,6 @@
-#include <torch/all.h>
-#include <ATen/cuda/CUDAContext.h>
-#include <c10/cuda/CUDAGuard.h>
-#include <c10/util/BFloat16.h>
-#include <c10/util/Half.h>
 #ifdef USE_ROCM
-    #include <c10/hip/HIPException.h>
-#else
-    #include <c10/cuda/CUDAException.h>
-#endif
+    #else
+    #endif
 
 #ifndef USE_ROCM
     #include <cub/block/block_load.cuh>

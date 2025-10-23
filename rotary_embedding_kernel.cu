@@ -1,7 +1,3 @@
-#include <torch/all.h>
-#include <ATen/cuda/CUDAContext.h>
-#include <c10/cuda/CUDAGuard.h>
-
 namespace vllm {
 
 template <typename scalar_t, bool IS_NEOX>

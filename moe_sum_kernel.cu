@@ -1,6 +1,4 @@
-#include <torch/all.h>
 #include <ATEN/cuda/CUDAContext.h>
-#include <c10/cuda/CUDAGuard.h>
 #include <cub/cub.cuh>
 
 #include <ATEN/ATEN.h>

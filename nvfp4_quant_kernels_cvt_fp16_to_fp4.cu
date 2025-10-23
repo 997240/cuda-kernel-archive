@@ -1,8 +1,5 @@
-#include <torch/all.h>
 #include <cuda_runtime_api.h>
 #include <cuda_runtime.h>
-#include <ATen/cuda/CUDAContext.h>
-#include <c10/cuda/CUDAGuard.h>
 #include <cuda_fp8.h>
 
 namespace vllm {

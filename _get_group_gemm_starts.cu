@@ -1,8 +1,4 @@
-#include <torch/all.h>
 #include <cutlass/arch/arch.h>
-#include <ATen/cuda/CUDAContext.h>
-#include <c10/cuda/CUDAGuard.h>
-#include <c10/cuda/CUDAStream.h>
 #include <cute/tensor.hpp>
 #include <cassert>
 #include <cstdint>

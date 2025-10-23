@@ -1,6 +1,3 @@
-#include <c10/core/ScalarType.h>
-#include <torch/all.h>
-#include <ATen/cuda/CUDAContext.h>
 #include <cstdint>
 
 namespace cutlass {

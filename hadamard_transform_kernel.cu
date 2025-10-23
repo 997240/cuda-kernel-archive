@@ -1,12 +1,7 @@
-#include <torch/all.h>
 #include <stdint.h>
 #include <cuda_runtime.h>
 #include <mma.h>
 #include <cuda/annotated_ptr>
-#include <c10/cuda/CUDAException.h>
-#include <ATen/cuda/CUDAContext.h>
-#include <c10/cuda/CUDAGuard.h>
-
 namespace hadacore {
 
 #ifndef __CUDACC__
